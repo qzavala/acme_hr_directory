@@ -29,44 +29,99 @@ app.get("/api/employees", async (req, res, next) => {
   });
 
 
+app.get("/api/departments", async (req, res, next) => {
+    try {
+  
+      const SQL = `SELECT * FROM departments ORDER BY name`;
+      const response = await client.query(SQL);
+      res.send(response.rows);
+    } catch (ex) {
+      next(ex);
+    }
+  });
 
+  app.post("/api/employees", async (req, res, next) => {
+    try {
+  
+      const SQL = 
+      "INSERT INTO employees(name, department_id) VALUES($1, $2) RETURNING *";
+      const response = await client.query(SQL, [
+        req.body.name,
+        req.body.department_id
+      ]
 
+      );
+      res.send(response.rows[0]);
+    } catch (ex) {
+      next(ex);
+    }
+  });
+
+  app.put("/api/employees/:id", async (req, res, next) => {
+    try {
+  
+      const SQL = 
+      "UPDATE employees SET name=$1, department_id=$2, updated_at=now() Where id=$3 RETURNING *";
+      const response = await client.query(SQL,[
+        req.body.name,
+        req.body.department_id,
+        req.params.id
+      ]);
+      res.send(response.rows[0]);
+    } catch (ex) {
+      next(ex);
+    }
+  });
+
+  
+
+  app.delete("/api/departments/:id", async (req, res, next) => {
+    try {
+  
+      const SQL = "DELETE FROM employees WHERE id=$1";
+      await client.query(SQL, [req.params.id]);
+      res.send(response.rows);
+    } catch (ex) {
+      next(ex);
+    }
+  });
 
 
 
 
 async function init() {
-    client.connect();
+   await client.connect();
 
-const SQL = `
+let SQL = `
 DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS departments;
-
-CREATE TABLE employees(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    updated_at TIMESTAMP DEFAULT now(),
-    created_at TIMESTAMP DEFAULT now(),
-    department_id INTEGER REFERENCES categories(id) NOT NULL
-
-);
 
 CREATE TABLE departments(
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 
 );
+CREATE TABLE employees(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    updated_at TIMESTAMP DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
+    department_id INTEGER REFERENCES department(id) NOT NULL
 
-INSERT INTO employees(name, department_id) VALUES('Tom', 'Sales Lead');
-INSERT INTO employees(name, department_id) VALUES('Timmy', 'Head Custodian' );
-INSERT INTO employees(name, department_id) VALUES('Tamantha', 'IT Support Manager ');
+
+);
 
 
-INSERT INTO departments(name) VALUES('Sales'), (SELECT name FROM employees WHERE department_id = 'Sales Lead');
+INSERT INTO employees(name, department_id) VALUES('Tom', 1);
+INSERT INTO employees(name, department_id) VALUES('Timmy', 2 );
+INSERT INTO employees(name, department_id) VALUES('Tamantha', 3);
 
-INSERT INTO departments(name) VALUES('Janitor'),(SELECT name FROM employees WHERE department_id = 'Head Custodian');
 
-INSERT INTO departments(name) VALUES('IT Support'),(SELECT name FROM employees WHERE department_id = 'IT Support Manager');
+INSERT INTO departments(name) VALUES('Sales');
+
+INSERT INTO departments(name) VALUES('Janitor');
+
+INSERT INTO departments(name) VALUES('IT Support');
 
 
 `;
