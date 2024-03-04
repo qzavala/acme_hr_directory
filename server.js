@@ -106,22 +106,22 @@ CREATE TABLE employees(
     name VARCHAR(100) NOT NULL,
     updated_at TIMESTAMP DEFAULT now(),
     created_at TIMESTAMP DEFAULT now(),
-    department_id INTEGER REFERENCES department(id) NOT NULL
+    department_id INTEGER REFERENCES departments(id) NOT NULL
 
 
 );
-
-
-INSERT INTO employees(name, department_id) VALUES('Tom', 1);
-INSERT INTO employees(name, department_id) VALUES('Timmy', 2 );
-INSERT INTO employees(name, department_id) VALUES('Tamantha', 3);
-
 
 INSERT INTO departments(name) VALUES('Sales');
 
 INSERT INTO departments(name) VALUES('Janitor');
 
 INSERT INTO departments(name) VALUES('IT Support');
+
+INSERT INTO employees(name, department_id) VALUES('Tom', 1);
+INSERT INTO employees(name, department_id) VALUES('Timmy', 2 );
+INSERT INTO employees(name, department_id) VALUES('Tamantha', 3);
+
+
 
 
 `;
